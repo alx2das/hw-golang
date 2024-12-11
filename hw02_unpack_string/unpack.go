@@ -40,8 +40,7 @@ func Unpack(input string) (string, error) {
 		if unicode.IsDigit(item) {
 			count, _ := strconv.Atoi(string(item))
 			if count == 0 {
-
-				var str = result.String()
+				str := result.String()
 				result.Reset()
 				result.WriteString(str[:len(str)-1])
 
