@@ -3,11 +3,11 @@ package hw03frequencyanalysis
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/require" //nolint:depguard
 )
 
 // Change to true if needed.
-var taskWithAsteriskIsCompleted = false
+var taskWithAsteriskIsCompleted = true
 
 var text = `Как видите, он  спускается  по  лестнице  вслед  за  своим
 	другом   Кристофером   Робином,   головой   вниз,  пересчитывая
@@ -63,6 +63,31 @@ func TestTop10(t *testing.T) {
 				"не",        // 4
 			}
 			require.Equal(t, expected, Top10(text))
+
+			require.Equal(
+				t,
+				[]string{
+					"нога",       // 6
+					"и",          // 2
+					"одинаковые", // 2
+					"слова",      // 2
+					"это",        // 2
+				},
+				Top10(`"Нога" и "нога" - это одинаковые слова, "нога!", "нога", "нога," и " 'нога' " - это одинаковые слова;`),
+			)
+
+			require.Equal(
+				t,
+				[]string{
+					"-------",  // 4
+					"не",       // 2
+					"слово",    // 1
+					"словом",   // 1
+					"это",      // 1
+					"является", // 1
+				},
+				Top10(`"-------" "-------" это слово "-------" Не НЕ нЕ "-" словом не является "-------"`),
+			)
 		} else {
 			expected := []string{
 				"он",        // 8
