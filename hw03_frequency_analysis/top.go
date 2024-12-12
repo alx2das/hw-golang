@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// no comments
+// no comments.
 var regexpNormalize = regexp.MustCompile(`\p{L}+(-\p{L}+)*|-{2,}`)
 
 type wordData struct {
