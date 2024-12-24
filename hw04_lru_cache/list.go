@@ -26,7 +26,7 @@ func NewList() List {
 	return new(list)
 }
 
-// Len returns the length of the list
+// Len вернет длину списка
 func (l *list) Len() int {
 	return l.size
 }
