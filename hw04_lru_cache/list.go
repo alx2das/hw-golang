@@ -51,14 +51,36 @@ func (l *list) Back() *ListItem {
 
 // PushFront добавит значение в начало
 func (l *list) PushFront(v interface{}) *ListItem {
-	//TODO implement me
-	panic("implement me")
+	newListItem := &ListItem{Value: v}
+
+	if l.size == 0 {
+		l.head = newListItem
+		l.tail = newListItem
+	} else {
+		newListItem.Next = l.head
+		l.head.Prev = newListItem
+		l.head = newListItem
+	}
+
+	l.size++
+	return newListItem
 }
 
 // PushBack добавит значение в конец
 func (l *list) PushBack(v interface{}) *ListItem {
-	//TODO implement me
-	panic("implement me")
+	newListItem := &ListItem{Value: v}
+
+	if l.size == 0 {
+		l.head = newListItem
+		l.tail = newListItem
+	} else {
+		newListItem.Prev = l.tail
+		l.tail.Next = newListItem
+		l.tail = newListItem
+	}
+
+	l.size++
+	return newListItem
 }
 
 // Remove удалит элемент
