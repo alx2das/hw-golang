@@ -26,10 +26,12 @@ func NewList() List {
 	return new(list)
 }
 
+// Len returns the length of the list
 func (l *list) Len() int {
 	return l.size
 }
 
+// Front вернет первый элемент списка
 func (l *list) Front() *ListItem {
 	if l.size == 0 {
 		return nil
@@ -38,6 +40,7 @@ func (l *list) Front() *ListItem {
 	return l.head
 }
 
+// Back вернет последний элемент списка
 func (l *list) Back() *ListItem {
 	if l.size == 0 {
 		return nil
@@ -46,21 +49,25 @@ func (l *list) Back() *ListItem {
 	return l.tail
 }
 
+// PushFront добавит значение в начало
 func (l *list) PushFront(v interface{}) *ListItem {
 	//TODO implement me
 	panic("implement me")
 }
 
+// PushBack добавит значение в конец
 func (l *list) PushBack(v interface{}) *ListItem {
 	//TODO implement me
 	panic("implement me")
 }
 
+// Remove удалит элемент
 func (l *list) Remove(i *ListItem) {
 	//TODO implement me
 	panic("implement me")
 }
 
+// MoveToFront переместит элемент в начало
 func (l *list) MoveToFront(i *ListItem) {
 	//TODO implement me
 	panic("implement me")
