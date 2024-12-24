@@ -14,7 +14,9 @@ func Unpack(input string) (string, error) {
 	var previous rune
 	var shielding bool
 
-	for _, current := range []rune(input) {
+	runes := []rune(input)
+
+	for _, current := range runes {
 		if shielding {
 			result.WriteRune(current)
 
