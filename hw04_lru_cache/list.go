@@ -85,12 +85,71 @@ func (l *list) PushBack(v interface{}) *ListItem {
 
 // Remove удалит элемент
 func (l *list) Remove(i *ListItem) {
-	//TODO implement me
-	panic("implement me")
+	if i == nil || l.size == 0 {
+		return
+	}
+
+	// если узел в начале списка
+	if i == l.head {
+		l.head = i.Next
+		if l.head != nil {
+			l.head.Prev = nil
+		} else {
+			l.tail = nil
+		}
+	}
+
+	// если узел в конце списка
+	if i == l.tail {
+		l.tail = i.Prev
+		if l.tail != nil {
+			l.tail.Next = nil
+		} else {
+			l.head = nil
+		}
+	}
+
+	// если узел находится где-то в середине
+	if i.Prev != nil {
+		i.Prev.Next = i.Next
+	}
+	if i.Next != nil {
+		i.Next.Prev = i.Prev
+	}
+
+	l.size--
 }
 
 // MoveToFront переместит элемент в начало
 func (l *list) MoveToFront(i *ListItem) {
-	//TODO implement me
-	panic("implement me")
+	// если узла нет или он уже в начале
+	if i == nil || l.head == i {
+		return
+	}
+
+	// если узел в начале или в конце списка
+	if i.Prev != nil {
+		i.Prev.Next = i.Next
+	}
+	if i.Next != nil {
+		i.Prev.Prev = i.Prev
+	}
+
+	// если узел был последним элементом
+	if l.tail == i {
+		l.tail = i.Prev
+	}
+
+	// перемещаем узел в начало
+	i.Next = l.head
+	if l.head != nil {
+		l.head.Prev = i
+	}
+	l.head = i
+	i.Prev = nil
+
+	// если список был из одного узла
+	if l.tail == nil {
+		l.tail = i
+	}
 }
