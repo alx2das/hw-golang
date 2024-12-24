@@ -10,62 +10,58 @@ import (
 var ErrInvalidString = errors.New("invalid string")
 
 func Unpack(input string) (string, error) {
-	// пустая строка - коррект
-	if input == "" {
-		return "", nil
-	}
-
-	// начало с цифры - ошибка
-	if unicode.IsDigit(rune(input[0])) {
-		return "", ErrInvalidString
-	}
-
 	var result strings.Builder
-	var isEscaped bool
+	var previous rune
+	var shielding bool
 
-	for i, item := range input {
-		// если пытаемся повторить неэкранированную цифру
-		if unicode.IsDigit(item) && unicode.IsDigit(rune(input[i-1])) && input[i-2] != '\\' {
-			return "", ErrInvalidString
-		}
+	for _, current := range []rune(input) {
+		if shielding {
+			result.WriteRune(current)
 
-		// если пытаемся повторить букву
-		if unicode.IsLetter(item) && isEscaped {
-			return "", ErrInvalidString
-		}
+			previous = current
+			shielding = false
 
-		// начало экранирование
-		if item == '\\' && !isEscaped {
-			isEscaped = true
 			continue
 		}
 
-		// записываем экранированный символ
-		if isEscaped {
-			result.WriteRune(item)
-			isEscaped = false
+		if current == '\\' {
+			shielding = true
 			continue
 		}
 
-		// повторим предыдущий символ `count` раз
-		if unicode.IsDigit(item) {
-			count, _ := strconv.Atoi(string(item))
+		if unicode.IsDigit(current) {
+			count, _ := strconv.Atoi(string(current))
 
-			// удалим предыдущий символ
+			if previous == 0 {
+				return "", ErrInvalidString
+			}
+
 			if count == 0 {
-				str := result.String()
+				str := removeLastChar(result.String())
 				result.Reset()
-				result.WriteString(str[:len(str)-1])
+				result.WriteString(str)
+
 				continue
 			}
 
-			// дублируем предыдущий символ `count` раз
-			result.WriteString(strings.Repeat(string(input[i-1]), count-1))
+			result.WriteString(strings.Repeat(string(previous), count-1))
+			previous = 0
+
 			continue
 		}
 
-		result.WriteRune(item)
+		previous = current
+		result.WriteRune(current)
 	}
 
 	return result.String(), nil
+}
+
+func removeLastChar(input string) string {
+	if len(input) == 0 {
+		return input
+	}
+
+	r := []rune(input)
+	return string(r[:len(r)-1])
 }
