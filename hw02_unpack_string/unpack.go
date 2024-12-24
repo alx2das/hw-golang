@@ -16,7 +16,9 @@ func Unpack(input string) (string, error) {
 
 	runes := []rune(input)
 
-	for _, current := range runes {
+	for i := 0; i < len(runes); i++ {
+		current := runes[i]
+
 		if shielding {
 			result.WriteRune(current)
 
