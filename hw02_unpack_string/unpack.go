@@ -20,6 +20,10 @@ func Unpack(input string) (string, error) {
 		current := runes[i]
 
 		if shielding {
+			if !(unicode.IsDigit(current) || current == '\\') {
+				return "", ErrInvalidString
+			}
+
 			result.WriteRune(current)
 
 			previous = current
