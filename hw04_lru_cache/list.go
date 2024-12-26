@@ -8,6 +8,7 @@ type List interface {
 	PushBack(v interface{}) *ListItem
 	Remove(i *ListItem)
 	MoveToFront(i *ListItem)
+	Clear()
 }
 
 type ListItem struct {
@@ -152,4 +153,12 @@ func (l *list) MoveToFront(i *ListItem) {
 	if l.tail == nil {
 		l.tail = i
 	}
+}
+
+// Clear очистит список
+// сборщик мусора автоматически освободит память для всех остальных узлов
+func (l *list) Clear() {
+	l.head = nil
+	l.tail = nil
+	l.size = 0
 }
