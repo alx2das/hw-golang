@@ -7,7 +7,7 @@ import (
 )
 
 func TestNewList(t *testing.T) {
-	t.Run("empty_list", func(t *testing.T) {
+	t.Run("empty list", func(t *testing.T) {
 		l := NewList()
 
 		require.NotNil(t, l)
@@ -28,7 +28,7 @@ func TestNewList(t *testing.T) {
 }
 
 func TestList_Add(t *testing.T) {
-	t.Run("push_front", func(t *testing.T) {
+	t.Run("push front", func(t *testing.T) {
 		l := NewList()
 
 		l.PushFront(10)
@@ -44,7 +44,7 @@ func TestList_Add(t *testing.T) {
 		require.Equal(t, 2, l.Len())
 	})
 
-	t.Run("push_back", func(t *testing.T) {
+	t.Run("push back", func(t *testing.T) {
 		l := NewList()
 
 		l.PushBack(10)
@@ -62,7 +62,7 @@ func TestList_Add(t *testing.T) {
 }
 
 func TestList_Remove(t *testing.T) {
-	t.Run("remove_nil", func(t *testing.T) {
+	t.Run("remove nil", func(t *testing.T) {
 		l := NewList()
 
 		l.PushFront(10) // [10]
@@ -73,7 +73,7 @@ func TestList_Remove(t *testing.T) {
 		require.Equal(t, 2, l.Len())
 	})
 
-	t.Run("remove_front", func(t *testing.T) {
+	t.Run("remove front", func(t *testing.T) {
 		l := NewList()
 
 		l.PushFront(10)     // [10]
@@ -90,7 +90,7 @@ func TestList_Remove(t *testing.T) {
 		require.Equal(t, 30, l.Front().Value)
 	})
 
-	t.Run("remove_back", func(t *testing.T) {
+	t.Run("remove back", func(t *testing.T) {
 		l := NewList()
 
 		l.PushBack(10)     // [10]
@@ -117,7 +117,7 @@ func TestList_MoveToFront(t *testing.T) {
 		require.Equal(t, 0, l.Len())
 	})
 
-	t.Run("one_item", func(t *testing.T) {
+	t.Run("one item", func(t *testing.T) {
 		l := NewList()
 
 		l.PushBack(10)

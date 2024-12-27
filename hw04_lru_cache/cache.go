@@ -14,7 +14,7 @@ type lruCache struct {
 	capacity int
 	queue    List
 	items    sync.Map
-	mu       sync.Mutex
+	mu       sync.RWMutex // Для синхронизаций операций с очередью
 }
 
 type cacheItem struct {
@@ -22,11 +22,13 @@ type cacheItem struct {
 	value interface{}
 }
 
+// Set добавит элемент в кеш по ключу
 func (c *lruCache) Set(key Key, value interface{}) bool {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
 	// если элемент присутствует в словаре
 	if existingNode, exist := c.items.Load(key); exist {
-		c.mu.Lock()
-		defer c.mu.Unlock()
 
 		node := existingNode.(*ListItem)
 		node.Value.(*cacheItem).value = value
@@ -38,9 +40,6 @@ func (c *lruCache) Set(key Key, value interface{}) bool {
 		// успешно обновлен
 		return true
 	}
-
-	c.mu.Lock()
-	defer c.mu.Unlock()
 
 	// добавить в словарь и в начало очереди
 	if c.queue.Len() >= c.capacity {
@@ -63,12 +62,13 @@ func (c *lruCache) Set(key Key, value interface{}) bool {
 	return false
 }
 
+// Get вернет элемент из кеша по ключу
 func (c *lruCache) Get(key Key) (interface{}, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	// если элемент присутствует в словаре
 	if existingNode, exist := c.items.Load(key); exist {
-		c.mu.Lock()
-		defer c.mu.Unlock()
-
 		node := existingNode.(*ListItem)
 		// переместить элемент в начало очереди
 		c.queue.MoveToFront(node)
@@ -79,6 +79,7 @@ func (c *lruCache) Get(key Key) (interface{}, bool) {
 	return nil, false
 }
 
+// Clear полностью очистит кеш
 func (c *lruCache) Clear() {
 	c.mu.Lock()
 	defer c.mu.Unlock()
