@@ -21,7 +21,7 @@ type cacheItem struct {
 	value interface{}
 }
 
-// NewCache создает LRU-кэш заданной емкости
+// NewCache создает LRU-кэш заданной емкости.
 func NewCache(capacity int) Cache {
 	return &lruCache{
 		capacity: capacity,
