@@ -80,11 +80,8 @@ func (c *lruCache) Get(key Key) (interface{}, bool) {
 
 // Clear полностью очистит кеш.
 func (c *lruCache) Clear() {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-
-	c.queue.Clear()
-	c.items.Clear()
+	c.queue = NewList()
+	c.items = sync.Map{}
 }
 
 func NewCache(capacity int) Cache {

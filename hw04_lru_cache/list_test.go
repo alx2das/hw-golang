@@ -73,6 +73,17 @@ func TestList_Remove(t *testing.T) {
 		require.Equal(t, 2, l.Len())
 	})
 
+	t.Run("remove one", func(t *testing.T) {
+		l := NewList()
+
+		l.PushFront(10)     // [10]
+		l.Remove(l.Front()) // []
+
+		require.Equal(t, 0, l.Len())
+		require.Nil(t, l.Front())
+		require.Nil(t, l.Back())
+	})
+
 	t.Run("remove front", func(t *testing.T) {
 		l := NewList()
 
@@ -170,22 +181,4 @@ func TestList_MoveToFront(t *testing.T) {
 		require.Equal(t, 3, l.Len())
 		require.Equal(t, 30, l.Front().Value)
 	})
-}
-
-func TestList_Clear(t *testing.T) {
-	l := NewList()
-
-	for _, v := range [...]int{10, 20, 30} {
-		l.PushBack(v) // [10, 20, 30]
-	}
-
-	require.Equal(t, 3, l.Len())
-	require.Equal(t, 10, l.Front().Value)
-	require.Equal(t, 30, l.Back().Value)
-
-	l.Clear()
-
-	require.Equal(t, 0, l.Len())
-	require.Nil(t, l.Front())
-	require.Nil(t, l.Back())
 }

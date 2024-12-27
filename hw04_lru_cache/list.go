@@ -8,7 +8,6 @@ type List interface {
 	PushBack(v interface{}) *ListItem
 	Remove(i *ListItem)
 	MoveToFront(i *ListItem)
-	Clear()
 }
 
 type ListItem struct {
@@ -34,19 +33,11 @@ func (l *list) Len() int {
 
 // Front вернет первый элемент списка.
 func (l *list) Front() *ListItem {
-	if l.size == 0 {
-		return nil
-	}
-
 	return l.head
 }
 
 // Back вернет последний элемент списка.
 func (l *list) Back() *ListItem {
-	if l.size == 0 {
-		return nil
-	}
-
 	return l.tail
 }
 
@@ -110,6 +101,12 @@ func (l *list) Remove(i *ListItem) {
 		i.Next.Prev = i.Prev
 	}
 
+	// если есть только один элемент в списке
+	if i.Prev == nil && i.Next == nil {
+		l.head = nil
+		l.tail = nil
+	}
+
 	l.size--
 }
 
@@ -140,12 +137,4 @@ func (l *list) MoveToFront(i *ListItem) {
 	}
 	l.head = i
 	i.Prev = nil
-}
-
-// Clear очистит список
-// сборщик мусора автоматически освободит память для всех остальных узлов.
-func (l *list) Clear() {
-	l.head = nil
-	l.tail = nil
-	l.size = 0
 }
