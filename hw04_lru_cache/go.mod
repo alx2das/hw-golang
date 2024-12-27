@@ -1,4 +1,4 @@
-module github.com/fixme_my_friend/hw04_lru_cache
+module github.com/alx2das/hw-golang/hw04_lru_cache
 
 go 1.23
 

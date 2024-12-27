@@ -7,7 +7,7 @@ import (
 )
 
 func TestNewList(t *testing.T) {
-	t.Run("create_new_list", func(t *testing.T) {
+	t.Run("empty_list", func(t *testing.T) {
 		l := NewList()
 
 		require.NotNil(t, l)
