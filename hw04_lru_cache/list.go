@@ -117,7 +117,7 @@ func (l *list) MoveToFront(i *ListItem) {
 		return
 	}
 
-	// если узел в начале или в конце списка
+	// если узел в середине или в конце списка
 	if i.Prev != nil {
 		i.Prev.Next = i.Next
 	}
