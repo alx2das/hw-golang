@@ -20,8 +20,30 @@ type cacheItem struct {
 }
 
 func (c *lruCache) Set(key Key, value interface{}) bool {
-	//TODO implement me
-	panic("implement me")
+	// если элемент присутствует в словаре
+	if node, exists := c.items[key]; exists {
+		node.Value.(*cacheItem).value = value
+		c.queue.MoveToFront(node)
+		return true
+	}
+
+	// если размер очереди больше ёмкости кэша
+	if len(c.items) >= c.capacity {
+		// удаляем последний элемент
+		tailNode := c.queue.Back()
+		if tailNode != nil {
+			tailItem := tailNode.Value.(*cacheItem)
+			delete(c.items, tailItem.key) // удаляем из словаря
+			c.queue.Remove(tailNode)      // удаляем из списка
+		}
+	}
+
+	// добавить в словарь и в начало очереди
+	newItem := &cacheItem{key, value}
+	newNode := c.queue.PushFront(newItem)
+	c.items[key] = newNode
+
+	return false
 }
 
 func (c *lruCache) Get(key Key) (interface{}, bool) {
