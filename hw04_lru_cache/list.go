@@ -27,12 +27,12 @@ func NewList() List {
 	return new(list)
 }
 
-// Len вернет длину списка
+// Len вернет длину списка.
 func (l *list) Len() int {
 	return l.size
 }
 
-// Front вернет первый элемент списка
+// Front вернет первый элемент списка.
 func (l *list) Front() *ListItem {
 	if l.size == 0 {
 		return nil
@@ -41,7 +41,7 @@ func (l *list) Front() *ListItem {
 	return l.head
 }
 
-// Back вернет последний элемент списка
+// Back вернет последний элемент списка.
 func (l *list) Back() *ListItem {
 	if l.size == 0 {
 		return nil
@@ -50,7 +50,7 @@ func (l *list) Back() *ListItem {
 	return l.tail
 }
 
-// PushFront добавит значение в начало
+// PushFront добавит значение в начало.
 func (l *list) PushFront(v interface{}) *ListItem {
 	newListItem := &ListItem{Value: v}
 
@@ -67,7 +67,7 @@ func (l *list) PushFront(v interface{}) *ListItem {
 	return newListItem
 }
 
-// PushBack добавит значение в конец
+// PushBack добавит значение в конец.
 func (l *list) PushBack(v interface{}) *ListItem {
 	newListItem := &ListItem{Value: v}
 
@@ -84,7 +84,7 @@ func (l *list) PushBack(v interface{}) *ListItem {
 	return newListItem
 }
 
-// Remove удалит элемент
+// Remove удалит элемент.
 func (l *list) Remove(i *ListItem) {
 	if i == nil || l.size == 0 {
 		return
@@ -113,7 +113,7 @@ func (l *list) Remove(i *ListItem) {
 	l.size--
 }
 
-// MoveToFront переместит элемент в начало
+// MoveToFront переместит элемент в начало.
 func (l *list) MoveToFront(i *ListItem) {
 	// если узла нет или он уже в начале
 	if i == nil || l.head == i {
@@ -143,7 +143,7 @@ func (l *list) MoveToFront(i *ListItem) {
 }
 
 // Clear очистит список
-// сборщик мусора автоматически освободит память для всех остальных узлов
+// сборщик мусора автоматически освободит память для всех остальных узлов.
 func (l *list) Clear() {
 	l.head = nil
 	l.tail = nil
