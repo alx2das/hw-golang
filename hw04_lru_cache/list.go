@@ -22,6 +22,7 @@ type list struct {
 	size int
 }
 
+// NewList создаст двусвязный список.
 func NewList() List {
 	return new(list)
 }
@@ -43,36 +44,36 @@ func (l *list) Back() *ListItem {
 
 // PushFront добавит значение в начало.
 func (l *list) PushFront(v interface{}) *ListItem {
-	newListItem := &ListItem{Value: v}
+	newItem := &ListItem{Value: v, Next: l.head}
 
-	if l.size == 0 {
-		l.head = newListItem
-		l.tail = newListItem
+	if l.head != nil {
+		l.head.Prev = newItem
 	} else {
-		newListItem.Next = l.head
-		l.head.Prev = newListItem
-		l.head = newListItem
+		// список пуст, обновляем tail
+		l.tail = newItem
 	}
 
+	l.head = newItem
 	l.size++
-	return newListItem
+
+	return newItem
 }
 
 // PushBack добавит значение в конец.
 func (l *list) PushBack(v interface{}) *ListItem {
-	newListItem := &ListItem{Value: v}
+	newItem := &ListItem{Value: v, Prev: l.tail}
 
-	if l.size == 0 {
-		l.head = newListItem
-		l.tail = newListItem
+	if l.tail != nil {
+		l.tail.Next = newItem
 	} else {
-		newListItem.Prev = l.tail
-		l.tail.Next = newListItem
-		l.tail = newListItem
+		// список пуст, обновляем head
+		l.head = newItem
 	}
 
+	l.tail = newItem
 	l.size++
-	return newListItem
+
+	return newItem
 }
 
 // Remove удалит элемент.
@@ -81,30 +82,18 @@ func (l *list) Remove(i *ListItem) {
 		return
 	}
 
-	// если узел в начале списка
-	if i == l.head && i != l.tail {
-		l.head = i.Next
-		l.head.Prev = nil
-	}
-
-	// если узел в конце списка
-	if i != l.head && i == l.tail {
-		l.tail = i.Prev
-		l.tail.Next = nil
-	}
-
-	// если узел находится где-то в середине
 	if i.Prev != nil {
 		i.Prev.Next = i.Next
-	}
-	if i.Next != nil {
-		i.Next.Prev = i.Prev
+	} else {
+		// удаляем head
+		l.head = i.Next
 	}
 
-	// если есть только один элемент в списке
-	if i.Prev == nil && i.Next == nil {
-		l.head = nil
-		l.tail = nil
+	if i.Next != nil {
+		i.Next.Prev = i.Prev
+	} else {
+		// удаляем tail
+		l.tail = i.Prev
 	}
 
 	l.size--
@@ -112,29 +101,28 @@ func (l *list) Remove(i *ListItem) {
 
 // MoveToFront переместит элемент в начало.
 func (l *list) MoveToFront(i *ListItem) {
-	// если узла нет или он уже в начале
 	if i == nil || l.head == i {
 		return
 	}
 
-	// если узел в середине или в конце списка
+	// удаляем элемент из текущей позиции
 	if i.Prev != nil {
 		i.Prev.Next = i.Next
 	}
 	if i.Next != nil {
-		i.Prev.Prev = i.Prev
+		i.Next.Prev = i.Prev
 	}
 
-	// если узел был последним элементом
+	// если элемент был в tail, обновляем
 	if l.tail == i {
 		l.tail = i.Prev
 	}
 
-	// перемещаем узел в начало
+	// перемещаем элемент в начало
 	i.Next = l.head
+	i.Prev = nil
 	if l.head != nil {
 		l.head.Prev = i
 	}
 	l.head = i
-	i.Prev = nil
 }

@@ -14,7 +14,6 @@ type lruCache struct {
 	capacity int
 	queue    List
 	items    sync.Map
-	mu       sync.RWMutex // Для синхронизаций операций с очередью
 }
 
 type cacheItem struct {
@@ -22,25 +21,27 @@ type cacheItem struct {
 	value interface{}
 }
 
-// Set добавит элемент в кеш по ключу.
-func (c *lruCache) Set(key Key, value interface{}) bool {
-	c.mu.RLock()
-	defer c.mu.RUnlock()
+// NewCache создает LRU-кэш заданной емкости
+func NewCache(capacity int) Cache {
+	return &lruCache{
+		capacity: capacity,
+		queue:    NewList(),
+	}
+}
 
+// Set добавит элемент в кеш или обновляет существующий.
+func (c *lruCache) Set(key Key, value interface{}) bool {
 	// если элемент присутствует в словаре
 	if existingNode, exist := c.items.Load(key); exist {
 		node := existingNode.(*ListItem)
 		node.Value.(*cacheItem).value = value
 
-		// обновить значение и переместить элемент в начало очереди
-		c.items.Store(key, node)
+		// перемещаем элемент в начало очереди
 		c.queue.MoveToFront(node)
-
-		// успешно обновлен
 		return true
 	}
 
-	// добавить в словарь и в начало очереди
+	// если кеш достиг емкости, удалим самый старый элемент
 	if c.queue.Len() >= c.capacity {
 		tailNode := c.queue.Back()
 		if tailNode != nil {
@@ -51,25 +52,19 @@ func (c *lruCache) Set(key Key, value interface{}) bool {
 		}
 	}
 
-	// добавляем элемент
+	// добавляем новый элемент
 	newItem := &cacheItem{key, value}
 	newNode := c.queue.PushFront(newItem)
-
 	c.items.Store(key, newNode)
 
-	// успешно добавлен
 	return false
 }
 
-// Get вернет элемент из кеша по ключу.
+// Get возвращаем элемент по ключу, если он существует.
 func (c *lruCache) Get(key Key) (interface{}, bool) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-
-	// если элемент присутствует в словаре
 	if existingNode, exist := c.items.Load(key); exist {
 		node := existingNode.(*ListItem)
-		// переместить элемент в начало очереди
+		// перемещаем элемент в начало очереди
 		c.queue.MoveToFront(node)
 
 		return node.Value.(*cacheItem).value, true
@@ -78,16 +73,8 @@ func (c *lruCache) Get(key Key) (interface{}, bool) {
 	return nil, false
 }
 
-// Clear полностью очистит кеш.
+// Clear полностью очищает кеш.
 func (c *lruCache) Clear() {
 	c.queue = NewList()
 	c.items = sync.Map{}
-}
-
-func NewCache(capacity int) Cache {
-	return &lruCache{
-		capacity: capacity,
-		queue:    NewList(),
-		items:    sync.Map{},
-	}
 }
