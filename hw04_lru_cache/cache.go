@@ -3,7 +3,7 @@ package hw04lrucache
 type Key string
 
 type Cache interface {
-	//Set(key Key, value interface{}) bool
+	Set(key Key, value interface{}) bool
 	Get(key Key) (interface{}, bool)
 	Clear()
 }
@@ -17,6 +17,11 @@ type lruCache struct {
 type cacheItem struct {
 	key   Key
 	value interface{}
+}
+
+func (c *lruCache) Set(key Key, value interface{}) bool {
+	//TODO implement me
+	panic("implement me")
 }
 
 func (c *lruCache) Get(key Key) (interface{}, bool) {

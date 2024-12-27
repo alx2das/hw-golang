@@ -91,23 +91,15 @@ func (l *list) Remove(i *ListItem) {
 	}
 
 	// если узел в начале списка
-	if i == l.head {
+	if i == l.head && i != l.tail {
 		l.head = i.Next
-		if l.head != nil {
-			l.head.Prev = nil
-		} else {
-			l.tail = nil
-		}
+		l.head.Prev = nil
 	}
 
 	// если узел в конце списка
-	if i == l.tail {
+	if i != l.head && i == l.tail {
 		l.tail = i.Prev
-		if l.tail != nil {
-			l.tail.Next = nil
-		} else {
-			l.head = nil
-		}
+		l.tail.Next = nil
 	}
 
 	// если узел находится где-то в середине
@@ -148,11 +140,6 @@ func (l *list) MoveToFront(i *ListItem) {
 	}
 	l.head = i
 	i.Prev = nil
-
-	// если список был из одного узла
-	if l.tail == nil {
-		l.tail = i
-	}
 }
 
 // Clear очистит список
