@@ -13,8 +13,8 @@ type Cache interface {
 type lruCache struct {
 	capacity int
 	queue    List
-	items    sync.Map
-	// mu       sync.Mutex
+	items    map[Key]*ListItem
+	mu       sync.Mutex
 }
 
 type cacheItem struct {
@@ -27,17 +27,17 @@ func NewCache(capacity int) Cache {
 	return &lruCache{
 		capacity: capacity,
 		queue:    NewList(),
+		items:    make(map[Key]*ListItem, capacity),
 	}
 }
 
 // Set добавит элемент в кеш или обновляет существующий.
 func (c *lruCache) Set(key Key, value interface{}) bool {
-	// c.mu.Lock()
-	// defer c.mu.Unlock()
+	c.mu.Lock()
+	defer c.mu.Unlock()
 
 	// если элемент присутствует в словаре
-	if existingNode, exist := c.items.Load(key); exist {
-		node := existingNode.(*ListItem)
+	if node, exist := c.items[key]; exist {
 		node.Value.(*cacheItem).value = value
 
 		// перемещаем элемент в начало очереди
@@ -51,7 +51,7 @@ func (c *lruCache) Set(key Key, value interface{}) bool {
 		if tailNode != nil {
 			tailItem := tailNode.Value.(*cacheItem)
 
-			c.items.Delete(tailItem.key)
+			delete(c.items, tailItem.key)
 			c.queue.Remove(tailNode)
 		}
 	}
@@ -59,21 +59,19 @@ func (c *lruCache) Set(key Key, value interface{}) bool {
 	// добавляем новый элемент
 	newItem := &cacheItem{key, value}
 	newNode := c.queue.PushFront(newItem)
-	c.items.Store(key, newNode)
+	c.items[key] = newNode
 
 	return false
 }
 
 // Get возвращаем элемент по ключу, если он существует.
 func (c *lruCache) Get(key Key) (interface{}, bool) {
-	// c.mu.Lock()
-	// defer c.mu.Unlock()
+	c.mu.Lock()
+	defer c.mu.Unlock()
 
-	if existingNode, exist := c.items.Load(key); exist {
-		node := existingNode.(*ListItem)
+	if node, exist := c.items[key]; exist {
 		// перемещаем элемент в начало очереди
 		c.queue.MoveToFront(node)
-
 		return node.Value.(*cacheItem).value, true
 	}
 
@@ -82,9 +80,9 @@ func (c *lruCache) Get(key Key) (interface{}, bool) {
 
 // Clear полностью очищает кеш.
 func (c *lruCache) Clear() {
-	// c.mu.Lock()
-	// defer c.mu.Unlock()
+	c.mu.Lock()
+	defer c.mu.Unlock()
 
 	c.queue = NewList()
-	c.items = sync.Map{}
+	c.items = make(map[Key]*ListItem, c.capacity)
 }
