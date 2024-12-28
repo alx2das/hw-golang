@@ -29,6 +29,8 @@ func TestCache(t *testing.T) {
 		wasInCache = c.Set("bbb", 200)
 		require.False(t, wasInCache)
 
+		// queue status: [aaa, bbb] max: 5
+
 		val, ok := c.Get("aaa")
 		require.True(t, ok)
 		require.Equal(t, 100, val)
@@ -40,6 +42,8 @@ func TestCache(t *testing.T) {
 		wasInCache = c.Set("aaa", 300)
 		require.True(t, wasInCache)
 
+		// queue status: [aaa, bbb] max: 5
+
 		val, ok = c.Get("aaa")
 		require.True(t, ok)
 		require.Equal(t, 300, val)
@@ -50,13 +54,85 @@ func TestCache(t *testing.T) {
 	})
 
 	t.Run("purge logic", func(t *testing.T) {
-		// Write me
+		var val interface{}
+		var ok bool
+
+		c := NewCache(3)
+
+		c.Set("aaa", 100)
+		c.Set("bbb", 200)
+		c.Set("ccc", 300)
+
+		// queue status: [aaa, bbb, ccc] max: 3
+
+		val, ok = c.Get("aaa")
+		require.True(t, ok)
+		require.Equal(t, 100, val)
+
+		val, ok = c.Get("bbb")
+		require.True(t, ok)
+		require.Equal(t, 200, val)
+
+		val, ok = c.Get("ccc")
+		require.True(t, ok)
+		require.Equal(t, 300, val)
+
+		// add queue overflow
+		c.Set("ddd", 400)
+		c.Set("eee", 500)
+
+		// queue status: [ccc, ddd, eee] max: 3
+
+		// check removed items
+		val, ok = c.Get("aaa")
+		require.False(t, ok)
+		require.Nil(t, val)
+
+		val, ok = c.Get("bbb")
+		require.False(t, ok)
+		require.Nil(t, val)
+
+		// check new items
+		val, ok = c.Get("ddd")
+		require.True(t, ok)
+		require.Equal(t, 400, val)
+
+		val, ok = c.Get("eee")
+		require.True(t, ok)
+		require.Equal(t, 500, val)
+	})
+
+	t.Run("clear cache", func(t *testing.T) {
+		var val interface{}
+		var ok bool
+
+		c := NewCache(3)
+
+		c.Set("aaa", 100)
+		c.Set("bbb", 200)
+		c.Set("ccc", 300)
+
+		// queue status: [aaa, bbb, ccc] max: 3
+
+		c.Clear()
+
+		// queue status: [] max: 3
+
+		val, ok = c.Get("aaa")
+		require.False(t, ok)
+		require.Nil(t, val)
+
+		val, ok = c.Get("bbb")
+		require.False(t, ok)
+		require.Nil(t, val)
+
+		val, ok = c.Get("ccc")
+		require.False(t, ok)
+		require.Nil(t, val)
 	})
 }
 
-func TestCacheMultithreading(t *testing.T) {
-	t.Skip() // Remove me if task with asterisk completed.
-
+func TestCacheMultithreading(_ *testing.T) {
 	c := NewCache(10)
 	wg := &sync.WaitGroup{}
 	wg.Add(2)
